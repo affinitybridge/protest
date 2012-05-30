@@ -74,7 +74,7 @@ function protest_admin_settings(&$form_state) {
       ),
     )
   );
-  
+
   $form['protest_date_from'] = array(
     '#type' => 'fieldset',
     '#title' => t('From Date'),
