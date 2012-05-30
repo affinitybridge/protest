@@ -1,5 +1,5 @@
 name = Protest
-description = "Rise your voices, tell the world how you feel. It is the time of the 99%."
+description = "Raise your voices, tell the world how you feel. It is the time of the 99%."
 core = 7.x
 files[] = protest.install
 files[] = protest.module
