@@ -5,4 +5,3 @@ files[] = protest.install
 files[] = protest.module
 files[] = protest.admin.inc
 configure = admin/config/protest
-

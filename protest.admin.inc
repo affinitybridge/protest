@@ -48,7 +48,7 @@ function protest_admin_settings($form, &$form_state) {
       ),
     )
   );
-  
+
   $form['protest_date_from'] = array(
     '#type' => 'fieldset',
     '#title' => t('From Date'),
@@ -178,5 +178,3 @@ function protest_restore() {
   variable_set('protest_dates', $protest_dates);
   variable_set('protest_body', $GLOBALS['protest_default_body']);
 }
-
-
