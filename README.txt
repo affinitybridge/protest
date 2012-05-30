@@ -31,4 +31,3 @@ None.
 -- CUSTOMIZATION --
 
 * You can cutomize several aspects of this module in Administer >> Site configuration >> Protest
-

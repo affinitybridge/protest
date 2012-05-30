@@ -12,7 +12,6 @@ $GLOBALS['protest_2day'] = array('year' => date('Y'), 'month' => date('n'), 'day
 $GLOBALS['protest_blackout_date'] = array('year' => 2012, 'month' => 6, 'day' => 4);
 define('BLACKOUTSPEAKOUT', '<a href="http://blackoutspeakout.ca" target="_blank"><img src="/sites/all/modules/custom/protest/images/website_en.jpg" alt="website_en" width="800" height="627"></a>');
 
-
 /**
 * Implements hook_install()
 */
