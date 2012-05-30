@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Installation file for "Protest" module.
+ */
+
+/* Today format for date field */
+$GLOBALS['protest_2day'] = array('year' => date('Y'), 'month' => date('n'), 'day' => date('j'));
+
+/* Black Out Speak Out protest */
+$GLOBALS['protest_blackout_date'] = array('year' => 2012, 'month' => 6, 'day' => 4);
+define('BLACKOUTSPEAKOUT', '<a href="http://blackoutspeakout.ca" target="_blank"><img src="/sites/all/modules/custom/protest/images/website_en.jpg" alt="website_en" width="800" height="627"></a>');
+
+
+/**
+* Implements hook_install()
+*/
+function protest_install() {
+  // Insert overlay option
+  variable_set('protest_overlay', TRUE);
+
+  // Display only once per session
+  variable_set('protest_once', TRUE);
+
+  // Dates for the protest
+  $protest_dates = array(
+    'from' => array(
+      'date' => $GLOBALS['protest_blackout_date'],
+      'time' => '00:00'
+    ),
+    'to' => array(
+      'date' => $GLOBALS['protest_blackout_date'],
+      'time' => '23:59'
+    ),
+  );
+  variable_set('protest_dates', $protest_dates);
+
+  // Insert explanation message in table variables
+  variable_set('protest_body', BLACKOUTSPEAKOUT);
+}
+
+/**
+* Implements hook_uninstall()
+*/
+function protest_uninstall() {
+  // Remove variables
+  variable_del('protest_overlay');
+  variable_del('protest_once');
+  variable_del('protest_dates');
+  variable_del('protest_body');
+}
