@@ -5,13 +5,6 @@
  * Administrative page callbacks for the protest module.
  */
 
-/* Today format for date field */
-$GLOBALS['protest_2day'] = array('year' => date('Y'), 'month' => date('n'), 'day' => date('j'));
-
-/* Black Out Speak Out protest */
-$GLOBALS['protest_default_date'] = array('year' => 2012, 'month' => 6, 'day' => 4);
-$GLOBALS['protest_default_body'] = '<a href="http://blackoutspeakout.ca" target="_blank"><img src="/sites/all/modules/custom/protest/images/website_en.jpg" alt="website_en" width="800" height="627"></a>';
-
 
 /**
 * The admin settings form
@@ -29,25 +22,14 @@ function protest_admin_settings($form, &$form_state) {
 
   // Display only once per session
   $form['protest_once'] = array(
-    '#description' => t("Uncheck if you want to display the protest on every page load."),
+    '#description' => t('Only display the blackout overlay one page load.'),
     '#title' => t('Display protest only once per session'),
     '#type' => 'checkbox',
     '#default_value' => variable_get('protest_once', TRUE),
   );
 
   // Dates
-  $protest_dates = variable_get('protest_dates',
-    array(
-      'from' => array(
-        'date' => $GLOBALS['protest_default_date'],
-        'time' => '00:00'
-      ),
-      'to' => array(
-        'date' => $GLOBALS['protest_default_date'],
-        'time' => '23:59'
-      ),
-    )
-  );
+  $protest_dates = variable_get('protest_dates', variable_get('protest_dates_default', FALSE));
 
   $form['protest_date_from'] = array(
     '#type' => 'fieldset',
@@ -100,7 +82,7 @@ function protest_admin_settings($form, &$form_state) {
     '#description' => t('Write the message for your protest here.'),
     '#title' => t('Explanation Message'),
     '#type' => 'textarea',
-    '#default_value' => variable_get('protest_body', $GLOBALS['protest_default_body']),
+    '#default_value' => variable_get('protest_body', variable_get('protest_body_default', FALSE)),
   );
 
   // Let the system module add submit buttons and manage validation
@@ -111,6 +93,20 @@ function protest_admin_settings($form, &$form_state) {
   $form['buttons']['reset'] = array('#type' => 'submit', '#value' => t('Reset to defaults') );
 
   return $form;
+}
+
+/**
+ * Validation function
+ */
+function protest_admin_settings_validate($form, &$form_state) {
+  $time_24h = "/^(([0-1]{1}[0-9]{1})|([2]{1}[0-3]{1})):(([0-5]{1}[0-9]{1}))$/"; /* 00:00 to 23:59 */
+
+  if (!preg_match($time_24h, $form_state['values']['time_from'])) {
+    form_set_error('time_from', t('You must enter a valid time.'));
+  }
+  if (!preg_match($time_24h, $form_state['values']['time_to'])) {
+    form_set_error('time_to', t('You must enter a valid time.'));
+  }
 }
 
 /**
@@ -137,6 +133,28 @@ function protest_admin_settings_submit($form, &$form_state) {
       ),
     );
     variable_set('protest_dates', $protest_dates);
+    
+    $from = $protest_dates['from']['date']['year'] . '-' .
+            $protest_dates['from']['date']['month'] . '-' .
+            $protest_dates['from']['date']['day'] . ' ' .
+            $protest_dates['from']['time'];
+    $to = $protest_dates['to']['date']['year'] . '-' .
+          $protest_dates['to']['date']['month'] . '-' .
+          $protest_dates['to']['date']['day'] . ' ' .
+          $protest_dates['to']['time'];
+          
+    // We need a unix timestamp in the timezone of the Drupal website, not the
+    // system time.
+    $website_timezone = new DateTimeZone(variable_get('date_default_timezone', FALSE));
+
+    $from_datetime = new DateTime($from, $website_timezone);
+    $from_datestamp = $from_datetime->format('U');
+    variable_set('protest_from_time', $from_datestamp);
+
+    $to_datetime = new DateTime($to, $website_timezone);
+    $to_datestamp = $to_datetime->format('U');
+    variable_set('protest_to_time', $to_datestamp);
+    
     variable_set('protest_body', $form_state['values']["protest_body"]);
 
     drupal_set_message(t('The configuration options have been saved.'));
@@ -146,35 +164,11 @@ function protest_admin_settings_submit($form, &$form_state) {
 }
 
 /**
- * Validation function
- */
-function protest_admin_settings_validate($form, &$form_state) {
-  $time_24h = "/^(([0-1]{1}[0-9]{1})|([2]{1}[0-3]{1})):(([0-5]{1}[0-9]{1}))$/"; /* 00:00 to 23:59 */
-
-  if (!preg_match($time_24h, $form_state['values']['time_from'])) {
-    form_set_error('time_from', t('You must enter a valid time.'));
-  }
-  if (!preg_match($time_24h, $form_state['values']['time_to'])) {
-    form_set_error('time_to', t('You must enter a valid time.'));
-  }
-}
-
-/**
  * Restore the original values.
  */
 function protest_restore() {
   variable_set('protest_overlay', TRUE);
   variable_set('protest_once', TRUE);
-  $protest_dates = array(
-    'from' => array(
-      'date' => $GLOBALS['protest_default_date'],
-      'time' => '00:00'
-    ),
-    'to' => array(
-      'date' => $GLOBALS['protest_default_date'],
-      'time' => '23:59'
-    ),
-  );
-  variable_set('protest_dates', $protest_dates);
-  variable_set('protest_body', $GLOBALS['protest_default_body']);
+  variable_set('protest_dates', variable_get('protest_dates_default'));
+  variable_set('protest_body', variable_get('protest_body_default', FALSE));
 }

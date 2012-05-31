@@ -23,11 +23,11 @@ function protest_install() {
 
   $protest_dates = array(
     'from' => array(
-      'date' => $protest_default_date],
+      'date' => $protest_default_date,
       'time' => '00:00'
     ),
     'to' => array(
-      'date' => $protest_default_date],
+      'date' => $protest_default_date,
       'time' => '23:59'
     ),
   );
@@ -37,7 +37,7 @@ function protest_install() {
   // Set the default blackout timestamps
   // We need a unix timestamp in the timezone of the Drupal website, not the
   // system time.
-  $website_timezone = variable_get('date_default_timezone', FALSE);
+  $website_timezone = new DateTimeZone(variable_get('date_default_timezone', FALSE));
 
   $from_date_default = '2012-06-04 00:00';
   $to_date_default = '2012-06-04 23:59';

@@ -2,15 +2,8 @@
 
 /**
  * @file
- * Display a message on a modal page for every page loaded.
+ * Display a blackout modal (ie: website proteset) during configuratble times.
  */
-
-/* Today format for date field */
-$GLOBALS['protest_2day'] = array('year' => date('Y'), 'month' => date('n'), 'day' => date('j'));
-
-/* Black Out Speak Out protest */
-$GLOBALS['protest_default_date'] = array('year' => 2012, 'month' => 6, 'day' => 4);
-$GLOBALS['protest_default_body'] = '<a href="http://blackoutspeakout.ca" target="_blank"><img src="/sites/all/modules/custom/protest/images/website_en.jpg" alt="website_en" width="800" height="627"></a>';
 
 
 /**
@@ -20,12 +13,12 @@ $GLOBALS['protest_default_body'] = '<a href="http://blackoutspeakout.ca" target=
 function protest_permission() {
   return array(
     'browse without warning' => array(
-      'title' => t('Browse without warning'),
-      'description' => t('If selected the warning message will not be displayed.'),
+      'title' => t('bypass protest blackoutt'),
+      'description' => t('Navigate site without experience the modal blackout.'),
     ),
     'administer protest' => array(
-      'title' => t('Administer Protest'),
-      'description' => t('Perform administration tasks for Black Out Speak Out'),
+      'title' => t('administer protest'),
+      'description' => t('Access to Protest administration page.'),
     ),
   );
 }
@@ -36,9 +29,9 @@ function protest_permission() {
 function protest_menu() {
   $items = array();
 
-  $items['admin/config/protest'] = array(
+  $items['admin/config/user-interface/protest'] = array(
     'title' => 'Protest',
-    'description' => 'Modify this settings for a better fit with your design. Remember you can also style the module by CSS.',
+    'description' => 'Modify this settings for a better fit with your site. Remember you can also style the module by CSS.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('protest_admin_settings'),
     'access arguments' => array('administer protest'),
@@ -57,9 +50,9 @@ function protest_init() {
   // Check if the protest is displayed on every page load
   $display_protest = FALSE;
   if (variable_get('protest_once', TRUE)) {
-    if (!session_get('protest_once')) {
+    if (!protest_session_get('protest_once')) {
       $display_protest = TRUE;
-      session_set('protest_once', TRUE);
+      protest_session_set('protest_once', TRUE);
     }
   }
   else {
@@ -67,36 +60,12 @@ function protest_init() {
   }
 
   if ($display_protest) {
-    // Check protest dates
-    $protest_dates = variable_get('protest_dates',
-      array(
-        'from' => array(
-          'date' => $GLOBALS['protest_default_date'],
-          'time' => '00:00'
-        ),
-        'to' => array(
-          'date' => $GLOBALS['protest_default_date'],
-          'time' => '23:59'
-        ),
-      )
-    );
-
-    // To avoid potential ambiguity, it's best to use ISO 8601 (YYYY-MM-DD) dates.
-    $format = 'Y-m-d';
-    $from_date = new DateTime($protest_dates['from']['date']['month'] . '/' . $protest_dates['from']['date']['day'] . '/' . $protest_dates['from']['date']['year']);
-    $to_date = new DateTime($protest_dates['to']['date']['month'] . '/' . $protest_dates['to']['date']['day'] . '/' . $protest_dates['to']['date']['year']);
-
-    /* PHP 5.3
-    $from_date = date_create_from_format($format, $protest_dates['from']['date']['year'] . '-' . $protest_dates['from']['date']['month'] . '-' . $protest_dates['from']['date']['day']);
-    $to_date = date_create_from_format($format, $protest_dates['to']['date']['year'] . '-' . $protest_dates['to']['date']['month'] . '-' . $protest_dates['to']['date']['day']);
-    */
-
-    // Change formats to make date comparation
-    $from_date = strtotime(date_format($from_date, $format) . ' ' . $protest_dates['from']['time']);
-    $to_date = strtotime(date_format($to_date, $format) . ' ' . $protest_dates['to']['time']);
+    $from_time = (int) variable_get('protest_from_time', FALSE);
+    $to_time = (int) variable_get('protest_to_time', FALSE);
     $now = strtotime('now');
 
-    if (($from_date <= $now) && ($now <= $to_date) && (user_access('browse without warning', $user) == FALSE)) {
+
+    if (($from_time <= $now) && ($now <= $to_time) && (user_access('browse without warning', $user) == FALSE)) {
       /* TODO: I'm not really sure this is the right way to get code from a template inside Drupal.settings */
       //$clean_widget = str_replace(array("\r\n", "\n", "\r", '"'), array("", "", "", '\"'), protest_widget());
       $clean_widget = protest_widget();
@@ -156,7 +125,7 @@ function protest_widget() {
 /**
  * Get a session variable.
  */
-function session_get($session_name, $default = FALSE) {
+function protest_session_get($session_name, $default = FALSE) {
   if (isset($_SESSION[$session_name])) {
     return $_SESSION[$session_name];
   }
@@ -166,6 +135,6 @@ function session_get($session_name, $default = FALSE) {
 /**
  * Set a session variable.
  */
-function session_set($session_name, $session_value) {
+function protest_session_set($session_name, $session_value) {
   $_SESSION[$session_name] = $session_value;
 }
