@@ -16,7 +16,7 @@ define('BLACKOUTSPEAKOUT', '<a href="http://blackoutspeakout.ca" target="_blank"
  * Implements hook_perm().
  */
 function protest_perm() {
-  return array('browse without warning', 'administer protest');
+  return array('bypass protest blackout', 'administer protest');
 }
 
 /**
@@ -250,7 +250,7 @@ function protest_init() {
     $to_time = (int) variable_get('protest_to_time', FALSE);
     $now = strtotime('now');
 
-    if (($from_time <= $now) && ($now <= $to_time) && (user_access('browse without warning', $user) == FALSE)) {
+    if (($from_time <= $now) && ($now <= $to_time) && (user_access('bypass protest blackout', $user) == FALSE)) {
       /* TODO: I'm not really sure this is the right way to get code from a template inside Drupal.settings */
       //$clean_widget = str_replace(array("\r\n", "\n", "\r", '"'), array("", "", "", '\"'), protest_widget());
       $clean_widget = protest_widget();

@@ -22,9 +22,9 @@ None.
 
     Users with role "administer protest" permission will see the administration page.
 
-  - browse without warning
+  - bypass protest blackout
 
-    Users with role "browse without warnings" permission will navigate your site
+    Users with role "bypass protest blackout" permission will navigate your site
     without watching the splash page for the protest.
 
 
