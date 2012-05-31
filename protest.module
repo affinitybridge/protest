@@ -175,7 +175,7 @@ function protest_admin_settings_submit($form, &$form_state) {
       ),
     );
     variable_set('protest_dates', $protest_dates);
-    $format = 'Y-n-j H:i';
+
     $from = $protest_dates['from']['date']['year'] . '-' .
             $protest_dates['from']['date']['month'] . '-' .
             $protest_dates['from']['date']['day'] . ' ' .
@@ -184,9 +184,20 @@ function protest_admin_settings_submit($form, &$form_state) {
           $protest_dates['to']['date']['month'] . '-' .
           $protest_dates['to']['date']['day'] . ' ' .
           $protest_dates['to']['time'];
-          error_log($from);
-    variable_set('protest_from_time', strtotime(date_format(new DateTime($from), $format)));
-    variable_set('protest_to_time', strtotime(date_format(new DateTime($to), $format)));
+
+    // We need a unix timestamp in the timezone of the Drupal website, not the
+    // system time.
+    $utc_timezone = new DateTimeZone('UTC');
+    $timezone_offset = (int) variable_get('date_default_timezone', FALSE);
+
+    $from_datetime = new DateTime($from, $utc_timezone);
+    $from_datestamp = $from_datetime->format('U') - $timezone_offset;
+    variable_set('protest_from_time', $from_datestamp);
+
+    $to_datetime = new DateTime($to, $utc_timezone);
+    $to_datestamp = $to_datetime->format('U') - $timezone_offset;
+    variable_set('protest_to_time', $to_datestamp);
+
     variable_set('protest_body', $form_state['values']["protest_body"]);
 
     drupal_set_message(t('The configuration options have been saved.'));
