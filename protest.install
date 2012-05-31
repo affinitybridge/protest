@@ -48,4 +48,6 @@ function protest_uninstall() {
   variable_del('protest_once');
   variable_del('protest_dates');
   variable_del('protest_body');
+  variable_del('protest_from_time');
+  variable_del('protest_to_time');
 }
