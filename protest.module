@@ -2,15 +2,8 @@
 
 /**
  * @file
- * Display a message on a modal page for every page loaded.
+ * Display a blackout modal (ie: website proteset) during configuratble times.
  */
-
-/* Today format for date field */
-$GLOBALS['protest_2day'] = array('year' => date('Y'), 'month' => date('n'), 'day' => date('j'));
-
-/* Black Out Speak Out protest */
-$GLOBALS['protest_blackout_date'] = array('year' => 2012, 'month' => 6, 'day' => 4);
-define('BLACKOUTSPEAKOUT', '<a href="http://blackoutspeakout.ca" target="_blank"><img src="/sites/all/modules/custom/protest/images/website_en.jpg" alt="website_en" width="800" height="627"></a>');
 
 /**
  * Implements hook_perm().
@@ -45,7 +38,7 @@ function protest_admin_settings(&$form_state) {
 
   // Overlay option
   $form['protest_overlay'] = array(
-    '#description' => t('Apply an overlay layer to the viewport making the content page no accessible.'),
+    '#description' => t('Apply an overlay layer to the viewport making page content inaccessible'),
     '#title' => t('Apply overlay layer'),
     '#type' => 'checkbox',
     '#default_value' => variable_get('protest_overlay', TRUE),
@@ -53,25 +46,14 @@ function protest_admin_settings(&$form_state) {
 
   // Display only once per session
   $form['protest_once'] = array(
-    '#description' => t("Uncheck if you want to display the protest on every page load."),
+    '#description' => t("Only display the blackout overlay one page load."),
     '#title' => t('Display protest only once per session'),
     '#type' => 'checkbox',
     '#default_value' => variable_get('protest_once', TRUE),
   );
 
   // Dates
-  $protest_dates = variable_get('protest_dates',
-    array(
-      'from' => array(
-        'date' => $GLOBALS['protest_blackout_date'],
-        'time' => '00:00'
-      ),
-      'to' => array(
-        'date' => $GLOBALS['protest_blackout_date'],
-        'time' => '23:59'
-      ),
-    )
-  );
+  $protest_dates = variable_get('protest_dates', variable_get('protest_dates_default', FALSE));
 
   $form['protest_date_from'] = array(
     '#type' => 'fieldset',
@@ -124,7 +106,7 @@ function protest_admin_settings(&$form_state) {
     '#description' => t('Write the message for your protest here.'),
     '#title' => t('Explanation Message'),
     '#type' => 'textarea',
-    '#default_value' => variable_get('protest_body', BLACKOUTSPEAKOUT),
+    '#default_value' => variable_get('protest_body', variable_get('protest_body_default', FALSE)),
   );
 
   // Let the system module add submit buttons and manage validation
@@ -212,18 +194,8 @@ function protest_admin_settings_submit($form, &$form_state) {
 function protest_restore() {
   variable_set('protest_overlay', TRUE);
   variable_set('protest_once', TRUE);
-  $protest_dates = array(
-    'from' => array(
-      'date' => $GLOBALS['protest_blackout_date'],
-      'time' => '00:00'
-    ),
-    'to' => array(
-      'date' => $GLOBALS['protest_blackout_date'],
-      'time' => '23:59'
-    ),
-  );
-  variable_set('protest_dates', $protest_dates);
-  variable_set('protest_body', BLACKOUTSPEAKOUT);
+  variable_set('protest_dates', variable_get('protest_dates_default'));
+  variable_set('protest_body', variable_get('protest_body_default', FALSE));
 }
 
 /**
@@ -235,9 +207,9 @@ function protest_init() {
   // Check if the protest is displayed on every page load
   $display_protest = FALSE;
   if (variable_get('protest_once', TRUE)) {
-    if (!session_get('protest_once')) {
+    if (!protest_session_get('protest_once')) {
       $display_protest = TRUE;
-      session_set('protest_once', TRUE);
+      protest_session_set('protest_once', TRUE);
     }
   }
   else {
@@ -269,7 +241,7 @@ function protest_init() {
 */
 function protest_widget() {
   $overlay = variable_get('protest_overlay', TRUE);
-  $body = variable_get('protest_body', BLACKOUTSPEAKOUT);
+  $body = variable_get('protest_body', variable_get('protest_body_default', FALSE));
 
   return theme('protest_widget', $overlay, $body);
 }
@@ -289,7 +261,7 @@ function protest_theme() {
 /**
  * Get a session variable.
  */
-function session_get($session_name, $default = FALSE) {
+function protest_session_get($session_name, $default = FALSE) {
   if (isset($_SESSION[$session_name])) {
     return $_SESSION[$session_name];
   }
@@ -299,6 +271,6 @@ function session_get($session_name, $default = FALSE) {
 /**
  * Set a session variable.
  */
-function session_set($session_name, $session_value) {
+function protest_session_set($session_name, $session_value) {
   $_SESSION[$session_name] = $session_value;
 }
