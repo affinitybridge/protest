@@ -1,6 +1,7 @@
 name = Protest
-description = "Raise your voices, tell the world how you feel. It is the time of the 99%."
+description = "Display a configurable blackout modal (ie: website protest)"
 core = 7.x
+php = 5.2
 files[] = protest.install
 files[] = protest.module
 files[] = protest.admin.inc
