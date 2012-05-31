@@ -1,11 +1,11 @@
 -- SUMMARY --
-A Drupal module to display protests.
+A Drupal module to display a modal blackout (ie: website protest).
 
 A splash page will be presented to the visitors of your site with the information about the protest you have chosen to support.
 
 -- REQUIREMENTS --
 
-None.
+PHP 5.2.
 
 
 -- INSTALLATION --
@@ -15,20 +15,20 @@ None.
 
 -- CONFIGURATION --
 
-* Configure user permissions in Administer >> People >> Permissions >>
-  protest module:
+* Configure user permissions in Administer >> People >> Permissions >> protest module:
 
   - administer protest
 
-    Users with role "administer protest" permission will see the administration page.
+    Users with the "administer protest" permission will have access to the protest administration page.
 
-  - browse without warning
+  - bypass protest blackout
 
-    Users with role "browse without warnings" permission will navigate your site
-    without watching the splash page for the protest.
+    Users with the "bypass protest blackout" permission will not experience the modal blackout.
+
+* Configure protest settings in Administer >> Configuration >> Protest.
 
 
--- CUSTOMIZATION --
+-- DEFAULTS --
 
-* You can cutomize several aspects of this module in Administer >> Configuration >> Protest
+* The default configuration is set to promote the BlackoutSpeakout campaign (http://www.blackoutspeakout.ca/)
 
