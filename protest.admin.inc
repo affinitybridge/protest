@@ -171,4 +171,6 @@ function protest_restore() {
   variable_set('protest_once', TRUE);
   variable_set('protest_dates', variable_get('protest_dates_default'));
   variable_set('protest_body', variable_get('protest_body_default', FALSE));
+  variable_set('protest_from_time', variable_get('protest_from_time_default', FALSE));
+  variable_set('protest_to_time', variable_get('protest_to_time_default', FALSE));
 }

@@ -20,7 +20,6 @@ function protest_install() {
   // @TODO: It would be nice to use one set of dates for the admin settings
   // and protest timestamps.
   $protest_default_date = array('year' => 2012, 'month' => 6, 'day' => 4);
-
   $protest_dates = array(
     'from' => array(
       'date' => $protest_default_date,
@@ -45,12 +44,15 @@ function protest_install() {
   $to_datetime = new DateTime($to_date_default, $website_timezone);
   $from_datestamp = $from_datetime->format('U');
   $to_datestamp = $to_datetime->format('U');
+  variable_set('protest_from_time_default', $from_datestamp);
+  variable_set('protest_to_time_default', $to_datestamp);
   variable_set('protest_from_time', $from_datestamp);
   variable_set('protest_to_time', $to_datestamp);
 
-  // Set the default protest message for the BlackoutSpeakout campaign
-  $path = drupal_get_path('module', 'protest');
-  $protest_default_body = '<a href="http://blackoutspeakout.ca" target="_blank"><img src="' . $path . '/images/website_en.jpg" alt="website_en" width="800" height="627"></a>';
+  // Set the default protest message for the BlackoutSpeakout campaign.
+  global $base_path;
+  $module_path = drupal_get_path('module', 'protest');
+  $protest_default_body = '<a href="http://blackoutspeakout.ca" target="_blank"><img src="' . $base_path . $module_path . '/images/website_en.jpg" alt="website_en" width="800" height="627"></a>';
   variable_set('protest_body_default', $protest_default_body);
 
   // Set the protest message
@@ -65,10 +67,11 @@ function protest_uninstall() {
   variable_del('protest_overlay');
   variable_del('protest_once');
   variable_del('protest_dates');
-  variable_del('protest_body');
   variable_del('protest_dates_default');
   variable_del('protest_from_time');
   variable_del('protest_to_time');
+  variable_del('protest_from_time_default');
+  variable_del('protest_to_time_default');
   variable_del('protest_body_default');
   variable_del('protest_body');
 }
