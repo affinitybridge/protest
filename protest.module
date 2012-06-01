@@ -20,7 +20,7 @@ function protest_menu() {
 
   $items['admin/settings/protest'] = array(
     'title' => 'Protest',
-    'description' => 'Modify this settings for a better fit with your site. Remember you can also style the module by CSS.',
+    'description' => 'Configure a site-wide blackout modal (ie: website protest).',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('protest_admin_settings'),
     'access arguments' => array('administer protest'),
