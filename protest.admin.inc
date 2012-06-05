@@ -155,8 +155,7 @@ function protest_admin_settings_submit($form, &$form_state) {
     $to_datestamp = $to_datetime->format('U');
     variable_set('protest_to_time', $to_datestamp);
     
-    $allowed_tags = array('a', 'em', 'strong', 'cite', 'blockquote', 'code', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'img');
-    variable_set('protest_body', filter_xss($form_state['values']["protest_body"], $allowed_tags));
+    variable_set('protest_body', $form_state['values']["protest_body"]);
 
     drupal_set_message(t('The configuration options have been saved.'));
   }
